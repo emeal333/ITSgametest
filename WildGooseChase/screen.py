@@ -18,6 +18,10 @@ bg = pygame.image.load("backgrounds/skyline.png")
 bg_width = bg.get_width()
 bg_rect = bg.get_rect()
 
+goose = pygame.image.load("sprites/goose_small.png")
+goose_height = goose.get_height()
+goose_width = goose.get_width()
+
 scroll = 0
 
 def draw_background(scroll):
@@ -40,6 +44,8 @@ while run:
     clock.tick(FPS)
 
     draw_background(scroll)
+
+    screen.blit(goose, (goose_width, SCREEN_HEIGHT - goose_height))
 
     # scroll background
     scroll -= 5
