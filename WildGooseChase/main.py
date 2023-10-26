@@ -48,7 +48,8 @@ camera_offset_x = 0
 image_x = SCREEN_WIDTH // 2 - goose_width // 2
 image_y = SCREEN_HEIGHT // 2 - goose_height
 
-rectangle = pygame.Rect(SCREEN_WIDTH, (SCREEN_HEIGHT // 2) - goose_height, 50, 50)
+rectangle = pygame.Rect(SCREEN_WIDTH,
+                        (SCREEN_HEIGHT // 2) - goose_height, 50, 50)
 
 movement_speed = 3
 
@@ -58,7 +59,7 @@ scroll = 0
 def draw_background(scr):
     # define game variables
     tiles = math.ceil(SCREEN_WIDTH / bg_width) + 1
-    
+
     # draw sky
     screen.blit(sky, (0, 0))
 
@@ -81,8 +82,10 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-        if (not game_started and event.type == pygame.MOUSEBUTTONDOWN
-                and start_button_rect.collidepoint(event.pos) and not game_over):
+        if (not game_started and event.type ==
+                pygame.MOUSEBUTTONDOWN and
+                start_button_rect.collidepoint(event.pos) and
+                not game_over):
             game_started = True
 
     clock.tick(FPS)
@@ -90,16 +93,17 @@ while running:
     if game_started:
         keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_UP] and image_y - movement_speed > 0:
+        if (keys[pygame.K_UP] and image_y - movement_speed > 0):
             image_y -= movement_speed
 
-        if keys[pygame.K_DOWN] and image_y + movement_speed < (SCREEN_HEIGHT // 2) - 50:
+        if (keys[pygame.K_DOWN] and image_y + movement_speed <
+                (SCREEN_HEIGHT // 2) - 50):
             image_y += movement_speed
-        
+
         image_x += movement_speed
 
         camera_offset_x = screen.get_width() // 2 - image_x - goose_width // 2
-        
+
         # draw scrolling background
         draw_background(scroll)
 
@@ -111,22 +115,26 @@ while running:
             scroll = 0
 
         screen.blit(cone, (camera_offset_x + 800, SCREEN_HEIGHT - 100))
-        rect_draw_pos = cone_rect.move(camera_offset_x + 800, SCREEN_HEIGHT - 100)
+        rect_draw_pos = cone_rect.move(camera_offset_x + 800,
+                                       SCREEN_HEIGHT - 100)
 
         screen.blit(cone, (camera_offset_x + 1600, SCREEN_HEIGHT - 100))
-        rect_draw_pos2 = cone_rect.move(camera_offset_x + 1600, SCREEN_HEIGHT - 100)
+        rect_draw_pos2 = cone_rect.move(camera_offset_x + 1600,
+                                        SCREEN_HEIGHT - 100)
 
         screen.blit(goose, (image_x + camera_offset_x - 300, image_y + 300))
-        goose_rect = goose.get_rect().move(image_x + camera_offset_x - 300, image_y + 300)
+        goose_rect = goose.get_rect().move(image_x + camera_offset_x - 300,
+                                           image_y + 300)
 
-        if goose_rect.colliderect(rect_draw_pos) or goose_rect.colliderect(rect_draw_pos2):
+        if (goose_rect.colliderect(rect_draw_pos) or
+                goose_rect.colliderect(rect_draw_pos2)):
             game_over = True
             movement_speed = 0
             screen.fill((255, 255, 255))
-            screen.blit(game_over_png, (SCREEN_WIDTH - game_over_png.get_width()*1.2,
-                                        SCREEN_HEIGHT - game_over_png.get_height()*1.3))
-            
-            # running = False
+            screen.blit(game_over_png,
+                        (SCREEN_WIDTH - game_over_png.get_width()*1.2,
+                            SCREEN_HEIGHT - game_over_png.get_height()*1.3))
+
     else:
         screen.fill((255, 255, 255))
         screen.blit(title, (SCREEN_WIDTH - title.get_width()*1.42, 50))
