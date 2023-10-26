@@ -1,4 +1,5 @@
-import pygame, math, button
+import pygame
+import math
 
 pygame.init()
 
@@ -53,31 +54,35 @@ movement_speed = 3
 
 scroll = 0
 
-def draw_background(scroll):
-    #define game variables
+
+def draw_background(scr):
+    # define game variables
     tiles = math.ceil(SCREEN_WIDTH / bg_width) + 1
     
-    #draw sky
+    # draw sky
     screen.blit(sky, (0, 0))
 
-    #draw scrolling background
+    # draw scrolling background
     for i in range(0, tiles):
-        screen.blit(bg, (i * bg_width + scroll, 0))
-        bg_rect.x = i * bg_width + scroll
+        screen.blit(bg, (i * bg_width + scr, 0))
+        bg_rect.x = i * bg_width + scr
         pygame.draw.rect(screen, (255, 0, 0), bg_rect, 1)
 
-#game loop
+# game loop
+
+
 running = True
 game_started = False
 game_over = False
 
 while running:
-    #event handler
+    # event handler
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-        if not game_started and event.type == pygame.MOUSEBUTTONDOWN and start_button_rect.collidepoint(event.pos) and not game_over:
+        if (not game_started and event.type == pygame.MOUSEBUTTONDOWN
+                and start_button_rect.collidepoint(event.pos) and not game_over):
             game_started = True
 
     clock.tick(FPS)
@@ -87,7 +92,8 @@ while running:
 
         if keys[pygame.K_UP] and image_y - movement_speed > 0:
             image_y -= movement_speed
-        if keys[pygame.K_DOWN] and image_y + movement_speed < (SCREEN_HEIGHT //2) - 50:
+
+        if keys[pygame.K_DOWN] and image_y + movement_speed < (SCREEN_HEIGHT // 2) - 50:
             image_y += movement_speed
         
         image_x += movement_speed
@@ -117,7 +123,8 @@ while running:
             game_over = True
             movement_speed = 0
             screen.fill((255, 255, 255))
-            screen.blit(game_over_png, (SCREEN_WIDTH - game_over_png.get_width()*1.2, SCREEN_HEIGHT - game_over_png.get_height()*1.3))
+            screen.blit(game_over_png, (SCREEN_WIDTH - game_over_png.get_width()*1.2,
+                                        SCREEN_HEIGHT - game_over_png.get_height()*1.3))
             
             # running = False
     else:
