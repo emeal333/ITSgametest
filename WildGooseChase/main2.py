@@ -45,6 +45,8 @@ cone = pygame.image.load("cone.png")
 cone_rect = cone.get_rect()
 missile = pygame.image.load("missle.png")
 missile_rect = missile.get_rect()
+coin = pygame.image.load("coin.png")
+coin_rect = coin.get_rect()
 
 # load goose sprite
 goose_height = 175
@@ -84,6 +86,18 @@ scroll = 0
 
 obstacles = []
 
+collectables = []
+
+hitbox_color = (255, 0, 0)
+
+coin_spacing = 300
+
+# Set up the font for displaying the score
+font = pygame.font.Font(None, 36)
+
+coins = 0
+
+score = 0
 
 class Obstacle:
     def __init__(self, image, type):
@@ -113,6 +127,38 @@ class HighOb(Obstacle):
         self.type = random.randint(0, 1)
         super().__init__(image, self.type)
         self.rect.y = goose_spawn_y - (goose_height)
+
+
+class Collectable:
+    def __init__(self, image, type):
+        self.image = image
+        self.type = type
+        self.rect = self.image.get_rect()
+        self.rect.x = SCREEN_WIDTH
+
+    def update(self):
+        self.rect.x -= movement_speed
+        if self.rect.x < -self.rect.width:
+            collectables.pop()
+
+    def draw(self, SCREEN):
+        SCREEN.blit(self.image, self.rect)
+
+
+class Coin(Collectable):
+    def __init__(self, image, goose_spawn_y, collectable_type):
+        super().__init__(image, collectable_type)
+        self.type = collectable_type
+        self.rect.y = goose_spawn_y + 50
+
+        #make coin smaller
+        scaled_width = 150
+        scaled_height = 150
+        self.image = pygame.transform.scale(self.image, (scaled_width, scaled_height))
+
+    def get_rect(self):
+        return self.image.get_rect(topleft=(self.rect.x, self.rect.y))
+
 
 
 def draw_background(scr):
@@ -210,6 +256,10 @@ while running:
             rectangle = goose.get_rect(topleft=(image_x + camera_offset_x - 300, image_y + 300))
             screen.blit(goose, rectangle)
 
+        #draw hitbox on goose
+        goose_hitbox = pygame.Rect(rectangle.topleft, (goose_width, goose_height))
+        pygame.draw.rect(screen, hitbox_color, goose_hitbox, 2)
+
         goose_rect = rectangle.copy()
 
         if len(obstacles) == 0:
@@ -221,7 +271,22 @@ while running:
         for obstacle in obstacles:
             obstacle.draw(screen)
             obstacle.update()
-            if goose_rect.colliderect(obstacle.rect):
+
+            if obstacle.type == 0:  # Cone obstacle
+                obstacle_hitbox = pygame.Rect(obstacle.rect.x, obstacle.rect.y, obstacle.rect.width,
+                                              obstacle.rect.height)
+            elif obstacle.type == 1:  # Missile obstacle
+                obstacle_hitbox = pygame.Rect(obstacle.rect.x, obstacle.rect.y, obstacle.rect.width,
+                                              obstacle.rect.height)
+            # draw hotbox on obstacles
+            obstacle_hitbox_draw = pygame.Rect(obstacle.rect.topleft, (obstacle.rect.width, obstacle.rect.height))
+            pygame.draw.rect(screen, hitbox_color, obstacle_hitbox_draw, 2)
+
+            # if not goose_rect.colliderect(obstacle_hitbox):
+            #     if goose_rect.x > obstacle.rect.x + obstacle.rect.width:
+            #         score += 1
+
+            if goose_rect.colliderect(obstacle_hitbox):
                 game_over = True
                 movement_speed = 0
                 screen.fill((255, 255, 255))
@@ -229,11 +294,49 @@ while running:
                             (SCREEN_WIDTH - game_over_png.get_width() * 1.2,
                              SCREEN_HEIGHT - game_over_png.get_height() * 1.3))
 
+            if len(collectables) == 0:
+                if random.randint(0, 0) == 0:
+                    collectables.append(Coin(coin, goose_spawn_y=image_y, collectable_type=0))
+
+            for collectable in collectables:
+                if game_over != True:
+                    collectable.draw(screen)
+                    collectable.update()
+
+                    if collectable.type == 0:
+                        # hitbox is adjusted for the scaled coin image size, if we add other collectables
+                        # i would need to fix it to work for other types
+                        collectable_hitbox = pygame.Rect(collectable.rect.x, collectable.rect.y, 150, 150)
+
+                    #draw hitboxed for coins
+                    collectable_hitbox_draw = pygame.Rect(collectable.rect.topleft, (150, 150))
+                    pygame.draw.rect(screen, hitbox_color, collectable_hitbox_draw, 2)
+
+                    if goose_rect.colliderect(collectable_hitbox):
+                        # Collision with coin
+                        coins += 1  # Increase the score by 1
+                        collectables.remove(collectable)
+
+                    # if not goose_rect.colliderect(obstacle_hitbox):
+                    #     if goose_rect.x > obstacle.rect.x + obstacle.rect.width:
+                    #         score += 1
+        for obstacle in obstacles:
+            if not goose_rect.colliderect(
+                    pygame.Rect(obstacle.rect.x, obstacle.rect.y, obstacle.rect.width, obstacle.rect.height)):
+                if goose_rect.x > obstacle.rect.x + obstacle.rect.width:
+                    score += 1
+
     else:
         screen.fill((255, 255, 255))
         screen.blit(title, (SCREEN_WIDTH - title.get_width()*1.42, 50))
         screen.blit(start_button, (start_button_x, start_button_y))
         # mixer.music.pause()
+
+    score_text = font.render(f"Score: {score}", True, (255, 255, 255))
+    screen.blit(score_text, (SCREEN_WIDTH - score_text.get_width() - 10, 10))
+    #coin total score in top left corner
+    coin_score = font.render(f"$ {coins}", True, (255, 255, 255))
+    screen.blit(coin_score, (10, 10))
 
     pygame.display.update()
 
