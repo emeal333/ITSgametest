@@ -97,8 +97,6 @@ font = pygame.font.Font(None, 36)
 
 coins = 0
 
-score = 0
-
 class Obstacle:
     def __init__(self, image, type):
         self.image = image
@@ -317,14 +315,6 @@ while running:
                         coins += 1  # Increase the score by 1
                         collectables.remove(collectable)
 
-                    # if not goose_rect.colliderect(obstacle_hitbox):
-                    #     if goose_rect.x > obstacle.rect.x + obstacle.rect.width:
-                    #         score += 1
-        for obstacle in obstacles:
-            if not goose_rect.colliderect(
-                    pygame.Rect(obstacle.rect.x, obstacle.rect.y, obstacle.rect.width, obstacle.rect.height)):
-                if goose_rect.x > obstacle.rect.x + obstacle.rect.width:
-                    score += 1
 
     else:
         screen.fill((255, 255, 255))
@@ -332,9 +322,7 @@ while running:
         screen.blit(start_button, (start_button_x, start_button_y))
         # mixer.music.pause()
 
-    score_text = font.render(f"Score: {score}", True, (255, 255, 255))
-    screen.blit(score_text, (SCREEN_WIDTH - score_text.get_width() - 10, 10))
-    #coin total score in top left corner
+    #coin total in top left corner
     coin_score = font.render(f"$ {coins}", True, (255, 255, 255))
     screen.blit(coin_score, (10, 10))
 
