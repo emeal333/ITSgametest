@@ -36,8 +36,8 @@ score = int(0)
 # initiate music & sound effect
 mixer.init()
 mixer.music.load('sound/game_music.wav')
-mixer.music.set_volume(0.1)
-mixer.music.play()
+mixer.music.set_volume(0.05)
+mixer.music.play(-1)
 collected_sound = mixer.Sound('sound/collected.wav')
 crash_sound = mixer.Sound('sound/crash.wav')
 
