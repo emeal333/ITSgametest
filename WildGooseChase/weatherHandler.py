@@ -63,10 +63,13 @@ def drawWeatherFront(screen):
 
 def setWeather(w):
     global w_name
-    global currentSkyList
+    global currentWeatherList
     global weathersList
+    global weather
 
     w_name = w
     if w_name == "snowy" or w_name == "rainy":
-        currentSkyList = weathersList[w + backgroundsHandler.bg_name + "List"]
+        currentWeatherList = weathersList[w + backgroundsHandler.bg_name + "List"]
+    weather = currentWeatherList[weatherNumber]
+
     backgroundsHandler.set_sky(w)
