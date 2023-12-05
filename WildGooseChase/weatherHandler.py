@@ -70,6 +70,6 @@ def setWeather(w):
     w_name = w
     if w_name == "snowy" or w_name == "rainy":
         currentWeatherList = weathersList[w + backgroundsHandler.bg_name + "List"]
-    weather = currentWeatherList[weatherNumber]
+        weather = currentWeatherList[weatherNumber]
 
     backgroundsHandler.set_sky(w)
